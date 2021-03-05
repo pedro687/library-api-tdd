@@ -7,12 +7,7 @@ Link: https://www.udemy.com/share/102s3iAEQdcFtQQng=/
 ## 💻 Projeto do curso
 
 API de cadastro de Livros e Empréstimos com CRUD completo (busca, listagem, inserção, atualização e exclusão.
-
-## :camera: Demonstração
-
-![Demonstraçao da API com Swagger - Demonstração em PNG](demo/demo1.png)
-
-![Demonstraçao do SPring Boot Admin - Demonstração em PNG](demo/demo2.png)
+do SPring Boot Admin - Demonstração em PNG](demo/demo2.png)
 
 ## :rocket: Conceitos e tecnologias
 
