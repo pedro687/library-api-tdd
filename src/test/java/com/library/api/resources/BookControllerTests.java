@@ -38,11 +38,9 @@ public class BookControllerTests {
                 .content(json);
 
         mvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("title").value("Meu Livro"))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value("My book"))
                 .andExpect(MockMvcResultMatchers.jsonPath("author").value("Jon Doe"));
-
     }
     
     @Test
