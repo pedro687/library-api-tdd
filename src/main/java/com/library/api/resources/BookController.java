@@ -1,25 +1,31 @@
 package com.library.api.resources;
 
 import com.library.api.DTOs.BookDTO;
+import com.library.api.domain.Book;
+import com.library.api.services.IBookService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
 
+    private IBookService service;
+    private ModelMapper modelMapper;
+
+    public BookController(IBookService service, ModelMapper mapper) {
+        this.service = service;
+        this.modelMapper = mapper;
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDTO createBook() {
-        BookDTO dto = new BookDTO();
-        dto.setAuthor("Jon Doe");
-        dto.setId(1L);
-        dto.setTitle("My book");
-        dto.setIsbn("123123");
+    public BookDTO createBook(@RequestBody BookDTO dto) {
+        Book entity = modelMapper.map( dto, Book.class );
+        Book createdBook = service.save(entity);
 
-        return dto;
+        return modelMapper.map( entity, BookDTO.class);
     }
 }
