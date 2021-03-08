@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.api.DTOs.BookDTO;
 import com.library.api.domain.Book;
 import com.library.api.services.IBookService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,7 +62,17 @@ public class BookControllerTests {
     
     @Test
     @DisplayName("Deve Dar erro ao cadastrar um livro com dados insuficientes")
-    void createBookException() {
+    void createBookException() throws Exception{
 
+        String json = new ObjectMapper().writeValueAsString(new BookDTO());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("erros", Matchers.hasSize(3)));
     }
 }
