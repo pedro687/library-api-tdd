@@ -1,6 +1,7 @@
 package com.library.api.services.impl;
 
 import com.library.api.domain.Book;
+import com.library.api.exceptions.BussinesException;
 import com.library.api.repositories.BookRepository;
 import com.library.api.services.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,10 @@ public class BookService implements IBookService {
 
     @Override
     public Book save(Book book) {
+        if(repository.existsByIsbn(book.getIsbn())){
+            throw new BussinesException("IBSN ja existente!");
+        }
         return repository.save(book);
+
     }
 }

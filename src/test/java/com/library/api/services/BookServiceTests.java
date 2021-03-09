@@ -1,6 +1,7 @@
 package com.library.api.services;
 
 import com.library.api.domain.Book;
+import com.library.api.exceptions.BussinesException;
 import com.library.api.repositories.BookRepository;
 import com.library.api.services.impl.BookService;
 import org.assertj.core.api.Assertions;
@@ -48,5 +49,19 @@ public class BookServiceTests {
         Assertions.assertThat(savedBook.getAuthor()).isNotNull().isEqualTo("Jon Doe");
         Assertions.assertThat(savedBook.getIsbn()).isNotNull().isEqualTo("12345");
 
+    }
+
+    @Test
+    @DisplayName("Não deve cadastrar produto com o mesmo ISBN")
+    public void shouldNotBeCreateWithDuplicatedISBN() {
+        Book book = Book.builder().id(10L).author("Jon Doe").isbn("12345").title("My book").build();
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
+
+        Throwable exception = Assertions.catchThrowable(() -> service.save(book));
+
+        assertThat(exception).isInstanceOf(BussinesException.class)
+                .hasMessage("IBSN ja existente!");
+
+        Mockito.verify(repository, Mockito.never()).save(book);
     }
 }
