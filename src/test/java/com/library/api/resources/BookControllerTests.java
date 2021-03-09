@@ -3,6 +3,7 @@ package com.library.api.resources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.api.DTOs.BookDTO;
 import com.library.api.domain.Book;
+import com.library.api.exceptions.BussinesException;
 import com.library.api.services.IBookService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -74,5 +75,27 @@ public class BookControllerTests {
         mvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("erros", Matchers.hasSize(3)));
+    }
+
+    @Test
+    @DisplayName("Deve dar erro ao cadastrar um livro com IBSN ja existente")
+    public void createBookWithInvalidIsbn() throws Exception{
+        BookDTO dto = BookDTO.builder().id(10L).author("Jon Doe").title("My book").isbn("12345").build();
+        Book entity = Book.builder().id(dto.getId()).isbn(dto.getIsbn()).title(dto.getTitle())
+                .author(dto.getAuthor()).build();
+
+        BDDMockito.given(service.save(entity)).willThrow(new BussinesException("IBSN ja existente!"));
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("erros", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("erros[0]").value("IBSN ja existente!"));
     }
 }

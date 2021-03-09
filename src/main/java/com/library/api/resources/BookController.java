@@ -3,6 +3,7 @@ package com.library.api.resources;
 import com.library.api.DTOs.BookDTO;
 import com.library.api.domain.Book;
 import com.library.api.exceptions.ApiErrors;
+import com.library.api.exceptions.BussinesException;
 import com.library.api.services.IBookService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,11 @@ public class BookController {
     public ApiErrors handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
        BindingResult bindingResult = ex.getBindingResult();
        return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BussinesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleBusinesException(BussinesException ex) {
+        return new ApiErrors(ex);
     }
 }
