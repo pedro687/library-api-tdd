@@ -21,9 +21,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest
@@ -97,5 +100,27 @@ public class BookControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("erros", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("erros[0]").value("IBSN ja existente!"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar um livro ja cadastrado por id")
+    public void shouldReturnAnBookWithPassedId() throws Exception {
+        Long id = 1L;
+        BookDTO dto = BookDTO.builder().id(id).isbn("12345").title("My book").author("Jon Doe").build();
+        Book book = Book.builder().id(dto.getId()).author(dto.getAuthor()).title(dto.getTitle())
+                .isbn(dto.getIsbn()).build();
+
+        BDDMockito.given(service.findById(id)).willReturn(Optional.of(book));
+        //execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(BASE_URL.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        //verificação
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(dto.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));
     }
 }

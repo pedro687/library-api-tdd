@@ -7,6 +7,8 @@ import com.library.api.services.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class BookService implements IBookService {
 
@@ -24,4 +26,11 @@ public class BookService implements IBookService {
         return repository.save(book);
 
     }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        return repository.findById(id);
+    }
+
+
 }

@@ -8,6 +8,7 @@ import com.library.api.services.IBookService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,6 +36,12 @@ public class BookController {
         Book createdBook = service.save(entity);
 
         return modelMapper.map( entity, BookDTO.class);
+    }
+
+    @GetMapping(value = "/{id}")
+    public BookDTO getBook(@PathVariable Long id) {
+        Book book = service.findById(id).get();
+        return modelMapper.map(book, BookDTO.class);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
