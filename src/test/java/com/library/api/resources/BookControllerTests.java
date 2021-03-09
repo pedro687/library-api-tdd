@@ -123,4 +123,19 @@ public class BookControllerTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()));
     }
+
+    @Test
+    @DisplayName("Deve retornar erro se um livro não existir")
+    public void shouldReturnExceptionIfBookDoenstExist() throws Exception {
+        Long id = 1L;
+
+        BDDMockito.given(service.findById(id)).willReturn(Optional.empty());
+        //execução
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(BASE_URL.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        //verificação
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 }
