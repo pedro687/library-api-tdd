@@ -5,7 +5,9 @@ import com.library.api.exceptions.BussinesException;
 import com.library.api.repositories.BookRepository;
 import com.library.api.services.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -32,5 +34,9 @@ public class BookService implements IBookService {
         return repository.findById(id);
     }
 
+    @Override
+    public void deleteById(Long id) throws ResponseStatusException {
+       repository.deleteById(id);
+    }
 
 }

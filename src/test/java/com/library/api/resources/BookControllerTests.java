@@ -138,4 +138,28 @@ public class BookControllerTests {
         mvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Deve deletar um livro")
+    public void deleteAnBook() throws Exception {
+    Long id = 1L;
+     BDDMockito.given(service.findById(Mockito.anyLong())).willReturn(Optional.of(Book.builder().id(1L).build()));
+
+     MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(BASE_URL.concat("/" + id));
+
+     mvc.perform(request)
+             .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Deve dar erro ao deletar um livro que nao existe")
+    public void deleteAnInexistentBook() throws Exception {
+        Long id = 1L;
+        BDDMockito.given(service.findById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(BASE_URL.concat("/" + id));
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
 }
