@@ -9,10 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -63,5 +66,34 @@ public class BookServiceTests {
 
         Mockito.verify(repository, Mockito.never()).save(book);
     }
+
+    @Test
+    @DisplayName("Busca por um livro passado por ID na base de dados")
+    public void findBook() {
+        Long id = 10L;
+        Book book = Book.builder().id(id).isbn("12345").title("My book").author("Jon Doe").build();
+
+        Mockito.when( service.findById(id) ).thenReturn(Optional.of(book));
+
+        Optional<Book> foundBook = service.findById(id);
+
+        Assertions.assertThat(foundBook.get().getId()).isNotNull().isEqualTo(book.getId());
+        Assertions.assertThat(foundBook.get().getIsbn()).isNotNull().isEqualTo(book.getIsbn());
+        Assertions.assertThat(foundBook.get().getAuthor()).isNotNull().isEqualTo(book.getAuthor());
+        Assertions.assertThat(foundBook.get().getTitle()).isNotNull().isEqualTo(book.getTitle());
+    }
+
+    @Test
+    @DisplayName("Retorna erro se o livro nao existir")
+    public void notFoundBook() {
+        Long id = 10L;
+
+        BDDMockito.given(service.findById(id)).willReturn(Optional.empty());
+
+        Optional<Book> notFoundBook = service.findById(id);
+
+        Assertions.assertThat(notFoundBook.isPresent()).isFalse();
+    }
+
 }
 
