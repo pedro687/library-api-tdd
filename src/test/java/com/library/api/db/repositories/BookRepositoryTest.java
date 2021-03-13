@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
@@ -46,5 +48,23 @@ public class BookRepositoryTest {
         boolean exists = repository.existsByIsbn(isbn);
 
         Assertions.assertThat(exists).isFalse();
+    }
+
+    @Test
+    @DisplayName("Deve retornar true se existir por id")
+    public void findByIdTest() {
+        Book book = Book.builder().id(null).author("Jon Doe").title("Some Title").isbn("12345").build();
+        entityManager.persist(book);
+
+        Optional<Book> verify = repository.findById(book.getId());
+
+        Assertions.assertThat(verify.isPresent()).isTrue();
+
+    }
+
+    @Test
+    @DisplayName("Deve retornar false se não existir por id")
+    public void notFoundById() {
+        Assertions.assertThat(repository.findById(1L).isPresent()).isFalse();
     }
 }
