@@ -39,4 +39,9 @@ public class BookService implements IBookService {
        repository.deleteById(id);
     }
 
+    @Override
+    public Book update(Book book) {
+        return repository.save(book);
+    }
+
 }

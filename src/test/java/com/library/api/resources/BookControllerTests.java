@@ -162,4 +162,34 @@ public class BookControllerTests {
         mvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Deve atualizar um livro")
+    public void updatingBook() throws Exception{
+        BookDTO dto = BookDTO.builder().id(10L).author("Jon Doe").title("My book").isbn("12345").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+        Book book = Book.builder().id(10L).author(dto.getAuthor())
+                .title(dto.getTitle()).isbn(dto.getIsbn())
+                .build();
+
+        BDDMockito.given(service.findById(dto.getId()))
+                .willReturn(Optional.of(book));
+
+        Book updatedBook = Book.builder().id(10L).author("Edited Autor").title("Edited Title")
+                .isbn("12345").build();
+
+        BDDMockito.given(service.update(book)).willReturn(updatedBook);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BASE_URL.concat("/" + dto.getId()))
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("id").value(updatedBook.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("author").value(updatedBook.getAuthor()))
+                .andExpect(MockMvcResultMatchers.jsonPath("title").value(updatedBook.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(updatedBook.getIsbn()));
+    }
 }
