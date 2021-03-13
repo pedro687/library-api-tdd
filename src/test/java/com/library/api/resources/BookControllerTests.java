@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -191,5 +192,21 @@ public class BookControllerTests {
                 .andExpect(MockMvcResultMatchers.jsonPath("author").value(updatedBook.getAuthor()))
                 .andExpect(MockMvcResultMatchers.jsonPath("title").value(updatedBook.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("isbn").value(updatedBook.getIsbn()));
+    }
+
+    @Test
+    @DisplayName("Deve dar erro ao tentar atualizar um livro inexistente")
+    public void updatingInexistentBook() throws Exception {
+        BookDTO dto = BookDTO.builder().id(10L).author("Jon Doe").title("My book").isbn("12345").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given(service.findById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BASE_URL.concat("/" + 1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
