@@ -95,5 +95,50 @@ public class BookServiceTests {
         Assertions.assertThat(notFoundBook.isPresent()).isFalse();
     }
 
+    @Test
+    @DisplayName("Deve deletar um livro")
+    public void deleteBook() {
+        Long id = 10L;
+        service.deleteById(id);
+
+        Mockito.when( service.findById(id) ).thenReturn(Optional.empty());
+
+        Optional<Book> verify = service.findById(id);
+
+        Assertions.assertThat(verify.isPresent()).isFalse();
+
+    }
+
+    @Test
+    @DisplayName("Deve dar erro ao deletar um livro com id nulo")
+    public void deleteBookException() {
+        Long id = null;
+        Throwable exception = Assertions.catchThrowable(() -> service.deleteById(id));
+        Assertions.assertThat(exception).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Id cannot be null");
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro")
+    public void updateBook() {
+        Book book = Book.builder().id(10L).author("Jon Doe").title("My book").isbn("12345").build();
+        Book updatingBook = Book.builder().id(10L).author("Jon").title("book").isbn("12345").build();
+        Mockito.when( service.update(book) ).thenReturn(updatingBook);
+
+        Book updatedBook = service.update(book);
+
+        Assertions.assertThat(updatedBook.getAuthor()).isEqualTo(updatingBook.getAuthor());
+        Assertions.assertThat(updatedBook.getId()).isEqualTo(updatingBook.getId());
+        Assertions.assertThat(updatedBook.getTitle()).isEqualTo(updatingBook.getTitle());
+        Assertions.assertThat(updatedBook.getIsbn()).isEqualTo(updatingBook.getIsbn());
+    }
+
+    @Test
+    @DisplayName("Deve dar erro ao tentar atualizar um livro que não existe")
+    public void updateBookError() {
+        Throwable exception = Assertions.catchThrowable(() -> service.update(null));
+        Assertions.assertThat(exception).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Id cannot be null");
+    }
 }
 

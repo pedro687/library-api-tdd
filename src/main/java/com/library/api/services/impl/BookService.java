@@ -36,11 +36,18 @@ public class BookService implements IBookService {
 
     @Override
     public void deleteById(Long id) throws ResponseStatusException {
+        if(id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+
        repository.deleteById(id);
     }
 
     @Override
     public Book update(Book book) {
+        if (book == null || book.getId() == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
         return repository.save(book);
     }
 
