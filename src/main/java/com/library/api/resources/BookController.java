@@ -7,6 +7,9 @@ import com.library.api.exceptions.BussinesException;
 import com.library.api.services.IBookService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
@@ -63,6 +67,12 @@ public class BookController {
 
             return new ModelMapper().map(book, BookDTO.class);
         }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping
+    public Page<BookDTO> find(BookDTO bookDTO, Pageable pageRequest) {
+        Book filter = modelMapper.map(bookDTO, Book.class);
+        return service.find(filter, pageRequest).map(entity -> modelMapper.map(entity, BookDTO.class));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

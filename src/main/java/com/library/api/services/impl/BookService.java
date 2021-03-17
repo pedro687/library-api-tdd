@@ -5,6 +5,8 @@ import com.library.api.exceptions.BussinesException;
 import com.library.api.repositories.BookRepository;
 import com.library.api.services.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -49,6 +51,11 @@ public class BookService implements IBookService {
             throw new IllegalArgumentException("Id cannot be null");
         }
         return repository.save(book);
+    }
+
+    @Override
+    public Page<Book> find(Book filter, Pageable pageRequest) {
+        return null;
     }
 
 }

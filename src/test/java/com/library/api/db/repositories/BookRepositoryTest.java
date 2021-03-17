@@ -67,4 +67,15 @@ public class BookRepositoryTest {
     public void notFoundById() {
         Assertions.assertThat(repository.findById(1L).isPresent()).isFalse();
     }
+
+    @Test
+    @DisplayName("Deve salvar um livro na base")
+    public void saveBook() {
+        Book book = Book.builder().id(10L).author("Jon Doe").title("Some Title").isbn("12345").build();
+
+        Book savedBook = repository.save(book);
+
+        Assertions.assertThat(savedBook.getId()).isNotNull();
+
+    }
 }
