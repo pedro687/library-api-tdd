@@ -5,6 +5,8 @@ import com.library.api.exceptions.BussinesException;
 import com.library.api.repositories.BookRepository;
 import com.library.api.services.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -55,7 +57,12 @@ public class BookService implements IBookService {
 
     @Override
     public Page<Book> find(Book filter, Pageable pageRequest) {
-        return null;
+        Example<Book> example = Example.of(filter, ExampleMatcher
+        .matching()
+        .withIgnoreCase()
+        .withIgnoreNullValues()
+        .withStringMatcher( ExampleMatcher.StringMatcher.CONTAINING));
+        return repository.findAll(example, pageRequest);
     }
 
 }
