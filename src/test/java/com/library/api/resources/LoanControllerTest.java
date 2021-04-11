@@ -7,6 +7,7 @@ import com.library.api.domain.Loan;
 import com.library.api.services.ILoanService;
 import com.library.api.services.impl.BookService;
 import com.library.api.services.impl.LoanService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +66,26 @@ public class LoanControllerTest {
         mvc.perform(request)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().string("1"));
+
+    }
+
+    @Test
+    @DisplayName("Deve dar erro ao fazer o empréstimo de um livro inexistente")
+    public void invalidIsbnCreateLoanTest() throws Exception{
+        LoanDTO dto = LoanDTO.builder().isbn("12345").customer("Jon Doe").build();
+        String json = new ObjectMapper().writeValueAsString(dto);
+
+        BDDMockito.given( bookService.findByIsbn(dto.getIsbn()) ).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("erros", Matchers.hasSize(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("erros[0]").value("Book not found for passed isbn"));
 
     }
 }

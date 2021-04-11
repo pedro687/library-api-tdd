@@ -75,16 +75,4 @@ public class BookController {
         return service.find(filter, pageRequest).map(entity -> modelMapper.map(entity, BookDTO.class));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-       BindingResult bindingResult = ex.getBindingResult();
-       return new ApiErrors(bindingResult);
-    }
-
-    @ExceptionHandler(BussinesException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handleBusinesException(BussinesException ex) {
-        return new ApiErrors(ex);
-    }
 }
