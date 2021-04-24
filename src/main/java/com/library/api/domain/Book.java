@@ -27,4 +27,8 @@ public class Book {
 
     @Column
     private String isbn;
+
+    @JoinColumn(name = "id_book")
+    @ManyToOne
+    private Book book;
 }

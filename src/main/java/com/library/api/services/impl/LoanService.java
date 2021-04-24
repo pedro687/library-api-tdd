@@ -1,6 +1,7 @@
 package com.library.api.services.impl;
 
 import com.library.api.DTOs.LoanFilterDTO;
+import com.library.api.domain.Book;
 import com.library.api.domain.Loan;
 import com.library.api.repositories.LoanRepository;
 import com.library.api.services.ILoanService;
@@ -39,6 +40,11 @@ public class LoanService implements ILoanService {
     @Override
     public Page<Loan> find(LoanFilterDTO dto, Pageable pageable) {
         return repo.findByBookIsbnOrCustomer(dto.getIsbn(), dto.getCustomer(), pageable);
+    }
+
+    @Override
+    public Page<Loan> getLoansByBook(Book book, Pageable pageable) {
+        return repo.findByBook(book, pageable);
     }
 
 }
