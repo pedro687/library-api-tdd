@@ -6,6 +6,8 @@ import com.library.api.services.ILoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoanService implements ILoanService {
 
@@ -19,5 +21,15 @@ public class LoanService implements ILoanService {
     @Override
     public Loan save(Loan save) {
         return repo.save(save);
+    }
+
+    @Override
+    public Optional<Loan> getById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void update(Loan loan) {
+
     }
 }

@@ -1,6 +1,7 @@
 package com.library.api.resources;
 
 import com.library.api.DTOs.LoanDTO;
+import com.library.api.DTOs.ReturnedLoanDTO;
 import com.library.api.domain.Book;
 import com.library.api.domain.Loan;
 import com.library.api.services.impl.BookService;
@@ -40,5 +41,12 @@ public class LoanController {
         entity = service.save(entity);
 
         return entity.getId();
+    }
+
+    @PatchMapping(value = "/{id}")
+    public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto) {
+        Loan loan = service.getById(id).get();
+        loan.setReturned(dto.getReturned());
+        service.update(loan);
     }
 }

@@ -2,6 +2,7 @@ package com.library.api.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.api.DTOs.LoanDTO;
+import com.library.api.DTOs.ReturnedLoanDTO;
 import com.library.api.domain.Book;
 import com.library.api.domain.Loan;
 import com.library.api.services.ILoanService;
@@ -21,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -87,5 +89,23 @@ public class LoanControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("erros", Matchers.hasSize(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("erros[0]").value("Book not found for passed isbn"));
 
+    }
+
+    @Test
+    @DisplayName("Deve retornar um livro")
+    public void returnBookTest() throws Exception {
+        ReturnedLoanDTO returned = ReturnedLoanDTO.builder().returned(true).build();
+        String json = new ObjectMapper().writeValueAsString(returned);
+
+        Loan loan = Loan.builder().id(1L).build();
+        BDDMockito.given(loanService.getById(Mockito.anyLong())).willReturn(Optional.of(loan));
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.patch(BASE_URL.concat("/1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(req).andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(loanService, Mockito.times(1)).update(loan);
     }
 }
