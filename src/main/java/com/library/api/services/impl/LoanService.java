@@ -1,9 +1,12 @@
 package com.library.api.services.impl;
 
+import com.library.api.DTOs.LoanFilterDTO;
 import com.library.api.domain.Loan;
 import com.library.api.repositories.LoanRepository;
 import com.library.api.services.ILoanService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -32,4 +35,10 @@ public class LoanService implements ILoanService {
     public Loan update(Loan loan) {
         return repo.save(loan);
     }
+
+    @Override
+    public Page<Loan> find(LoanFilterDTO dto, Pageable pageable) {
+        return null;
+    }
+
 }

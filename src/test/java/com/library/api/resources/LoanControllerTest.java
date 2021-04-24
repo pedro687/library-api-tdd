@@ -2,6 +2,7 @@ package com.library.api.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.api.DTOs.LoanDTO;
+import com.library.api.DTOs.LoanFilterDTO;
 import com.library.api.DTOs.ReturnedLoanDTO;
 import com.library.api.domain.Book;
 import com.library.api.domain.Loan;
@@ -14,11 +15,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
@@ -110,4 +116,34 @@ public class LoanControllerTest {
         Mockito.verify(loanService, Mockito.times(1)).update(loan);
     }
 
+    @Test
+    @DisplayName("Deve filtrar empréstimos")
+    public void findLoansTest() throws Exception{
+        //cenário
+        Long id = 1L;
+        Book book = Book.builder().id(1L).isbn("12345").build();
+        Loan loan = Loan.builder().id(1L).customer("Jon Doe").isbn("12345").book(book)
+                .loanDate(LocalDate.now())
+                .build();
+
+
+        BDDMockito.given( loanService.find(Mockito.any(LoanFilterDTO.class), Mockito.any(Pageable.class)) )
+                .willReturn( new PageImpl<Loan>( Arrays.asList(loan), PageRequest.of(0,100), 1 )   );
+
+        String queryString = String.format("?isbn=%s&customer=%s&page=0&size=10",
+                book.getIsbn(), loan.getCustomer());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BASE_URL.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform( request )
+                .andExpect( MockMvcResultMatchers.status().isOk() )
+                .andExpect( MockMvcResultMatchers.jsonPath("content", Matchers.hasSize(1)))
+                .andExpect( MockMvcResultMatchers.jsonPath("totalElements").value(1) )
+                .andExpect( MockMvcResultMatchers.jsonPath("pageable.pageSize").value(10) )
+                .andExpect( MockMvcResultMatchers.jsonPath("pageable.pageNumber").value(0))
+        ;
+    }
 }
