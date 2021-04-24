@@ -25,7 +25,7 @@ public class LoanService implements ILoanService {
 
     @Override
     public Optional<Loan> getById(Long id) {
-        return Optional.empty();
+        return repo.findById(id);
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -78,4 +79,17 @@ public class LoanServiceTest {
                 .build();
     }
 
+    @Test
+    @DisplayName("Deve obter as informações de um empréstimo pelo id")
+    public void getLoanDetailsTest() {
+        Loan loan = Loan.builder().id(1L).customer("Jon Doe").isbn("12345").book(Book.builder().id(1L).isbn("12345").build())
+                .loanDate(LocalDate.now())
+                .build();
+
+        Mockito.when(repository.findById(Mockito.anyLong())).thenReturn(Optional.of(loan));
+
+        Optional<Loan> result = service.getById(1L);
+
+        Assertions.assertThat(result.get().getId()).isEqualTo(1L);
+    }
 }

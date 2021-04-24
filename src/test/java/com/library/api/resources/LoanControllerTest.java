@@ -5,6 +5,7 @@ import com.library.api.DTOs.LoanDTO;
 import com.library.api.DTOs.ReturnedLoanDTO;
 import com.library.api.domain.Book;
 import com.library.api.domain.Loan;
+import com.library.api.repositories.LoanRepository;
 import com.library.api.services.ILoanService;
 import com.library.api.services.impl.BookService;
 import com.library.api.services.impl.LoanService;
@@ -108,4 +109,5 @@ public class LoanControllerTest {
 
         Mockito.verify(loanService, Mockito.times(1)).update(loan);
     }
+
 }
