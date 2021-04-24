@@ -8,5 +8,5 @@ public interface ILoanService {
     Loan save(Loan save);
     Optional<Loan> getById(Long id);
 
-    void update(Loan loan);
+    Loan update(Loan loan);
 }

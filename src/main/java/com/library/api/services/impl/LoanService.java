@@ -29,7 +29,7 @@ public class LoanService implements ILoanService {
     }
 
     @Override
-    public void update(Loan loan) {
-
+    public Loan update(Loan loan) {
+        return repo.save(loan);
     }
 }
